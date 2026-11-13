@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="Helvetica, Arial, sans-serif"><rect width="1600" height="900" fill="#fff"/><path d="M440,411.0 C390.0,411.0 390.0,163.0 340,163.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="340" cy="163.0" r="4" fill="#71717a"/>
+<path d="M440,411.0 C390.0,411.0 390.0,633.0 340,633.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="340" cy="633.0" r="4" fill="#71717a"/>
+<path d="M780,411.0 C820.0,411.0 820.0,124.0 860,124.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="860" cy="124.0" r="4" fill="#71717a"/>
+<path d="M780,411.0 C820.0,411.0 820.0,422.0 860,422.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="860" cy="422.0" r="4" fill="#71717a"/>
+<path d="M780,411.0 C820.0,411.0 820.0,683.0 860,683.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="860" cy="683.0" r="4" fill="#71717a"/>
+<path d="M1200,395.0 C1165.0,395.0 1165.0,124.0 1130,124.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="1130" cy="124.0" r="4" fill="#71717a"/>
+<path d="M1200,395.0 C1165.0,395.0 1165.0,422.0 1130,422.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="1130" cy="422.0" r="4" fill="#71717a"/>
+<path d="M1200,395.0 C1165.0,395.0 1165.0,683.0 1130,683.0" stroke="#71717a" stroke-width="1.6" fill="none"/>
+<circle cx="1130" cy="683.0" r="4" fill="#71717a"/>
+<rect x="440" y="250" width="340" height="322" rx="10" fill="#eef2ff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="440" y="250" width="340" height="38" rx="10" fill="#4338ca"/>
+<rect x="440" y="278" width="340" height="10" fill="#4338ca"/>
+<text x="454" y="276" font-size="17" font-weight="700" fill="#fff">FCT_SALES_LINES</text>
+<text x="454" y="312" font-size="14" font-weight="700" fill="#18181b">sales_line_id</text>
+<text x="766" y="312" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="454" y="334" font-size="14" font-weight="400" fill="#18181b">voucher_id</text>
+<text x="766" y="334" font-size="12" text-anchor="end" fill="#71717a">DD</text>
+<text x="454" y="356" font-size="14" font-weight="700" fill="#18181b">date_key</text>
+<text x="766" y="356" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="454" y="378" font-size="14" font-weight="700" fill="#18181b">hour_key</text>
+<text x="766" y="378" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="454" y="400" font-size="14" font-weight="700" fill="#18181b">branch_key</text>
+<text x="766" y="400" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="454" y="422" font-size="14" font-weight="700" fill="#18181b">product_key</text>
+<text x="766" y="422" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="454" y="444" font-size="14" font-weight="700" fill="#18181b">salesperson_key</text>
+<text x="766" y="444" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="454" y="466" font-size="14" font-weight="400" fill="#18181b">quantity · net_quantity</text>
+<text x="454" y="488" font-size="14" font-weight="400" fill="#18181b">gross_amount · discount_amount</text>
+<text x="454" y="510" font-size="14" font-weight="400" fill="#18181b">net_amount</text>
+<text x="454" y="532" font-size="14" font-weight="400" fill="#18181b">cost_amount · margin_amount</text>
+<text x="766" y="532" font-size="12" text-anchor="end" fill="#71717a">NULL s/costo</text>
+<text x="454" y="554" font-size="14" font-weight="400" fill="#18181b">has_cost · is_outside_opening_hours</text>
+<rect x="1200" y="300" width="340" height="190" rx="10" fill="#eef2ff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="1200" y="300" width="340" height="38" rx="10" fill="#4338ca"/>
+<rect x="1200" y="328" width="340" height="10" fill="#4338ca"/>
+<text x="1214" y="326" font-size="17" font-weight="700" fill="#fff">FCT_STORE_HOURS</text>
+<text x="1214" y="362" font-size="14" font-weight="700" fill="#18181b">store_hour_key</text>
+<text x="1526" y="362" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="1214" y="384" font-size="14" font-weight="700" fill="#18181b">date_key</text>
+<text x="1526" y="384" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="1214" y="406" font-size="14" font-weight="700" fill="#18181b">hour_key</text>
+<text x="1526" y="406" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="1214" y="428" font-size="14" font-weight="700" fill="#18181b">branch_key</text>
+<text x="1526" y="428" font-size="12" text-anchor="end" fill="#71717a">FK</text>
+<text x="1214" y="450" font-size="14" font-weight="400" fill="#18181b">staff_present</text>
+<text x="1526" y="450" font-size="12" text-anchor="end" fill="#71717a">capacidad</text>
+<text x="1214" y="472" font-size="14" font-weight="400" fill="#18181b">is_last_open_hour</text>
+<rect x="860" y="40" width="270" height="168" rx="10" fill="#ffffff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="860" y="40" width="270" height="38" rx="10" fill="#0e7490"/>
+<rect x="860" y="68" width="270" height="10" fill="#0e7490"/>
+<text x="874" y="66" font-size="17" font-weight="700" fill="#fff">DIM_DATE</text>
+<text x="874" y="102" font-size="14" font-weight="700" fill="#18181b">date_key</text>
+<text x="1116" y="102" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="874" y="124" font-size="14" font-weight="400" fill="#18181b">calendar_date · day_name</text>
+<text x="874" y="146" font-size="14" font-weight="400" fill="#18181b">iso_week · is_weekend</text>
+<text x="874" y="168" font-size="14" font-weight="400" fill="#18181b">is_holiday · holiday_name</text>
+<text x="874" y="190" font-size="14" font-weight="400" fill="#18181b">event_codes · is_seasonal_event</text>
+<rect x="860" y="360" width="270" height="124" rx="10" fill="#ffffff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="860" y="360" width="270" height="38" rx="10" fill="#0e7490"/>
+<rect x="860" y="388" width="270" height="10" fill="#0e7490"/>
+<text x="874" y="386" font-size="17" font-weight="700" fill="#fff">DIM_HOUR</text>
+<text x="874" y="422" font-size="14" font-weight="700" fill="#18181b">hour_key</text>
+<text x="1116" y="422" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="874" y="444" font-size="14" font-weight="400" fill="#18181b">hour_label</text>
+<text x="874" y="466" font-size="14" font-weight="400" fill="#18181b">day_part</text>
+<rect x="860" y="610" width="270" height="146" rx="10" fill="#ffffff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="860" y="610" width="270" height="38" rx="10" fill="#0e7490"/>
+<rect x="860" y="638" width="270" height="10" fill="#0e7490"/>
+<text x="874" y="636" font-size="17" font-weight="700" fill="#fff">DIM_BRANCH</text>
+<text x="874" y="672" font-size="14" font-weight="700" fill="#18181b">branch_key</text>
+<text x="1116" y="672" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="874" y="694" font-size="14" font-weight="400" fill="#18181b">branch_id · branch_name</text>
+<text x="874" y="716" font-size="14" font-weight="400" fill="#18181b">is_matriz</text>
+<text x="874" y="738" font-size="14" font-weight="400" fill="#18181b">experiment_role</text>
+<text x="1116" y="738" font-size="12" text-anchor="end" fill="#71717a">trat./control</text>
+<rect x="40" y="90" width="300" height="146" rx="10" fill="#ffffff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="40" y="90" width="300" height="38" rx="10" fill="#0e7490"/>
+<rect x="40" y="118" width="300" height="10" fill="#0e7490"/>
+<text x="54" y="116" font-size="17" font-weight="700" fill="#fff">DIM_PRODUCT</text>
+<text x="54" y="152" font-size="14" font-weight="700" fill="#18181b">product_key</text>
+<text x="326" y="152" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="54" y="174" font-size="14" font-weight="400" fill="#18181b">product_id · product_name</text>
+<text x="54" y="196" font-size="14" font-weight="400" fill="#18181b">category_name</text>
+<text x="54" y="218" font-size="14" font-weight="400" fill="#18181b">sale_price · is_kit</text>
+<rect x="40" y="560" width="300" height="146" rx="10" fill="#ffffff" stroke="#3f3f46" stroke-width="1.6"/>
+<rect x="40" y="560" width="300" height="38" rx="10" fill="#0e7490"/>
+<rect x="40" y="588" width="300" height="10" fill="#0e7490"/>
+<text x="54" y="586" font-size="17" font-weight="700" fill="#fff">DIM_SALESPERSON</text>
+<text x="54" y="622" font-size="14" font-weight="700" fill="#18181b">salesperson_key</text>
+<text x="326" y="622" font-size="12" text-anchor="end" fill="#71717a">PK</text>
+<text x="54" y="644" font-size="14" font-weight="400" fill="#18181b">salesperson_code</text>
+<text x="326" y="644" font-size="12" text-anchor="end" fill="#71717a">P01…</text>
+<text x="54" y="666" font-size="14" font-weight="400" fill="#18181b">staff_role</text>
+<text x="54" y="688" font-size="14" font-weight="400" fill="#18181b">first/last_sale_date</text>
+<text x="440" y="760" font-size="15" font-weight="700" fill="#18181b">Grano</text>
+<text x="440" y="784" font-size="14" fill="#3f3f46">FCT_SALES_LINES: una línea de comprobante completado (19.504 filas).</text>
+<text x="440" y="806" font-size="14" fill="#3f3f46">FCT_STORE_HOURS: sucursal × fecha × hora abierta (2.578 filas). Spine de la OBT.</text>
+<text x="440" y="828" font-size="14" fill="#3f3f46">DIM_DATE, DIM_HOUR y DIM_BRANCH son conformadas (las comparten ambos hechos). DD = dimensión degenerada.</text></svg>
