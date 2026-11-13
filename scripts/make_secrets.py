@@ -7,6 +7,13 @@ import base64
 import os
 from pathlib import Path
 
+
+def open_secret(path: str):
+    """Abre el archivo solo para el dueño (0600), aunque ya existiera con otros permisos."""
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    os.fchmod(fd, 0o600)
+    return os.fdopen(fd, "w")
+
 env = {k: v for k, v in os.environ.items()}
 values = {
     "SNOWFLAKE_ACCOUNT": env["SNOWFLAKE_ACCOUNT"],
@@ -20,12 +27,12 @@ values = {
     "ERP_SSH_KEY": Path(env["ERP_SSH_KEY_FILE"]).read_text(),
     "ERP_SSH_KNOWN_HOSTS": Path("secrets/known_hosts").read_text(),
 }
-with open(".env.kestra", "w") as f:
+with open_secret(".env.kestra") as f:
     for k, v in values.items():
         f.write(f"SECRET_{k}={base64.b64encode(v.encode()).decode()}\n")
 # docker --env-file no admite valores multilínea: las llaves viajan en una línea con \n escapado
 # y se usan solo para correr dbt/ingesta a mano fuera de Kestra.
-with open(".env.runtime", "w") as f:
+with open_secret(".env.runtime") as f:
     for k, v in values.items():
         f.write(f"{k}={v.strip()}\n" if "\n" not in v.strip() else "")
     f.write("SNOWFLAKE_PRIVATE_KEY_FILE=/app/secrets/snowflake_rsa_key.p8\nDBT_PROFILES_DIR=/app/dbt\n")
