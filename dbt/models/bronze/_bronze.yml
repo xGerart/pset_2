@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: stg_erp__vouchers
+    description: Comprobantes tipados, con horas en America/Guayaquil. Puede tener voucher_id repetido (reproceso).
+    columns:
+      - name: voucher_id
+        tests: [not_null]
+      - name: branch_id
+        tests: [not_null]
+      - name: created_at_local
+        description: Hora local; un NULL indica un timestamp que no se pudo interpretar.
+        tests: [not_null]
+      - name: voucher_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['completed', 'cancelled', 'pending', 'draft']
+      - name: total
+        tests: [not_null]
+  - name: stg_erp__voucher_items
+    columns:
+      - name: voucher_item_id
+        tests: [not_null]
+      - name: voucher_id
+        tests: [not_null]
+      - name: quantity
+        tests: [not_null]
+  - name: stg_erp__batch_consumption
+    columns:
+      - name: consumption_id
+        tests: [not_null]
+  - name: stg_erp__branches
+  - name: stg_erp__products
+    columns:
+      - name: product_id
+        tests: [not_null]
+  - name: stg_erp__categories
+  - name: stg_erp__staff
+  - name: stg_nager__holidays
+    columns:
+      - name: holiday_date
+        tests: [not_null]

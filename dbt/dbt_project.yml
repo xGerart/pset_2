@@ -1,0 +1,48 @@
+name: pset2
+version: "1.0.0"
+config-version: 2
+profile: pset2
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  business_tz: "America/Guayaquil"
+  # Ventana de análisis: el 2026-11-08 entra una cajera adicional (cambio de
+  # régimen de personal). La ingesta sigue a diario; el corte es del análisis.
+  analysis_start_date: "2026-08-20"
+  analysis_end_date: "2026-11-07"
+  calendar_end_date: "2026-12-31"
+  matriz_branch_id: 1
+  control_branch_id: 2
+  # Ventas registradas hasta N minutos después del cierre se atribuyen a la
+  # última hora abierta (cliente que entró antes de cerrar).
+  post_close_grace_minutes: 30
+
+models:
+  pset2:
+    bronze:
+      +schema: BRONZE
+      +materialized: view
+    silver:
+      +schema: SILVER
+      +materialized: table
+    gold:
+      +schema: GOLD
+      +materialized: table
+
+seeds:
+  pset2:
+    +schema: BRONZE
+    opening_hours:
+      +column_types: {branch_id: integer, open_hour: integer, close_hour: integer, valid_from: date, valid_to: date}
+    staffing_rules:
+      +column_types: {branch_id: integer, hour: integer, staff_present: integer, valid_from: date, valid_to: date}
+    holiday_overrides:
+      +column_types: {holiday_date: date}
+    calendar_events:
+      +column_types: {start_date: date, end_date: date}

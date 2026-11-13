@@ -1,0 +1,98 @@
+# Infraestructura local del PSet 2: Kestra (orquestación) + Spark (OBT).
+# dbt y la extracción corren en contenedores efímeros (imagen pset2-runner)
+# que Kestra lanza por el socket de Docker. Snowflake es el destino (nube).
+name: pset2
+
+x-spark-image: &spark-image
+  image: pset2-spark:3.5.7
+  build: ./docker/spark
+
+services:
+  kestra-postgres:
+    image: postgres:16.10
+    environment:
+      POSTGRES_DB: kestra
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: kestra   # base de metadatos local de Kestra, no expuesta
+    volumes:
+      - kestra-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d kestra -U kestra"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  kestra:
+    image: kestra/kestra:v1.3.44
+    user: root
+    command: server standalone
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.kestra          # SECRET_* en base64, generado por `make secrets` (no versionado)
+    environment:
+      ENV_HOST_PROJECT_DIR: ${PWD}
+      ENV_ANALYSIS_START_DATE: ${ANALYSIS_START_DATE}
+      ENV_ANALYSIS_END_DATE: ${ANALYSIS_END_DATE}
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://kestra-postgres:5432/kestra
+            driverClassName: org.postgresql.Driver
+            username: kestra
+            password: kestra
+        kestra:
+          server:
+            basic-auth:
+              username: "${KESTRA_USER}"
+              password: "${KESTRA_PASSWORD}"
+          repository:
+            type: postgres
+          queue:
+            type: postgres
+          storage:
+            type: local
+            local:
+              base-path: /app/storage
+          tasks:
+            tmp-dir:
+              path: /tmp/kestra-wd/tmp
+          url: http://localhost:8080/
+          plugins:
+            configurations:
+              - type: io.kestra.plugin.scripts.runner.docker.Docker
+                values:
+                  volume-enabled: true
+    volumes:
+      - kestra-data:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/kestra-wd:/tmp/kestra-wd
+    depends_on:
+      kestra-postgres:
+        condition: service_healthy
+
+  spark-master:
+    <<: *spark-image
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master --host spark-master
+    ports:
+      - "8081:8080"   # UI del master
+      - "7077:7077"
+
+  spark-worker:
+    <<: *spark-image
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      SPARK_WORKER_CORES: "2"
+      SPARK_WORKER_MEMORY: 2g
+    depends_on:
+      - spark-master
+
+  # Solo construye la imagen que Kestra usa para extraer, cargar y correr dbt.
+  runner:
+    image: pset2-runner:1.0
+    build: ./docker/runner
+    profiles: ["build"]
+
+volumes:
+  kestra-postgres:
+  kestra-data:

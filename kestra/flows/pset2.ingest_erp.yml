@@ -1,0 +1,69 @@
+id: ingest_erp
+namespace: pset2
+description: |
+  Extrae ventas del ERP (SSH, solo lectura, anonimizado) y feriados (API Nager.Date) y los
+  carga append-only en Snowflake RAW.
+  - Corrida diaria: recarga [fecha_lógica - 7 días, fecha_lógica - 1] (ventana de reproceso
+    para capturar anulaciones tardías; los duplicados se resuelven en Silver).
+  - Backfill: ejecutar con inputs start_date/end_date, o usar Backfill del trigger en la UI.
+
+inputs:
+  - id: start_date
+    type: DATE
+    required: false
+    description: Inicio del backfill (fecha local). Vacío = corrida diaria.
+  - id: end_date
+    type: DATE
+    required: false
+    description: Fin del backfill (inclusive).
+
+variables:
+  run_date: "{{ trigger.date ?? execution.startDate | date('yyyy-MM-dd', timeZone='America/Guayaquil') }}"
+  window_args: "{{ inputs.start_date is not null ? ('--start ' ~ inputs.start_date ~ ' --end ' ~ inputs.end_date) : '--lookback-days 7' }}"
+
+tasks:
+  - id: extract_load
+    type: io.kestra.plugin.scripts.shell.Commands
+    description: SSH al ERP -> CSV -> PUT/COPY a RAW, con conciliación de filas en RAW.LOAD_AUDIT.
+    containerImage: pset2-runner:1.0
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      pullPolicy: NEVER
+      volumes:
+        - "{{ envs.host_project_dir }}/ingest:/app/ingest:ro"
+    env:
+      SNOWFLAKE_ACCOUNT: "{{ secret('SNOWFLAKE_ACCOUNT') }}"
+      SNOWFLAKE_USER: "{{ secret('SNOWFLAKE_USER') }}"
+      SNOWFLAKE_ROLE: "{{ secret('SNOWFLAKE_ROLE') }}"
+      SNOWFLAKE_WAREHOUSE: "{{ secret('SNOWFLAKE_WAREHOUSE') }}"
+      SNOWFLAKE_DATABASE: "{{ secret('SNOWFLAKE_DATABASE') }}"
+      SNOWFLAKE_PRIVATE_KEY: "{{ secret('SNOWFLAKE_PRIVATE_KEY') }}"
+      ERP_SSH_HOST: "{{ secret('ERP_SSH_HOST') }}"
+      ERP_SSH_USER: "{{ secret('ERP_SSH_USER') }}"
+      ERP_SSH_KEY: "{{ secret('ERP_SSH_KEY') }}"
+      ERP_SSH_KNOWN_HOSTS: "{{ secret('ERP_SSH_KNOWN_HOSTS') }}"
+      RUN_ID: "{{ execution.id }}"
+    commands:
+      - python /app/ingest/extract_load.py --run-date {{ render(vars.run_date) }} {{ render(vars.window_args) }}
+    timeout: PT30M
+    retry:
+      type: exponential
+      interval: PT30S
+      maxInterval: PT5M
+      maxAttempts: 4
+      warningOnRetry: true
+
+errors:
+  - id: alert_failure
+    type: io.kestra.plugin.core.log.Log
+    level: ERROR
+    message: >
+      Ingesta fallida tras los reintentos (ejecución {{ execution.id }}, fecha lógica
+      {{ render(vars.run_date) }}). Revisar RAW.LOAD_AUDIT y los logs de extract_load.
+
+triggers:
+  - id: daily_after_close
+    type: io.kestra.plugin.core.trigger.Schedule
+    description: 02:00 hora local, después del cierre de caja (la tienda cierra a las 19:00).
+    cron: "0 2 * * *"
+    timezone: America/Guayaquil

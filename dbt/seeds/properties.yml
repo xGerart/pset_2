@@ -1,0 +1,20 @@
+version: 2
+seeds:
+  - name: opening_hours
+    description: >
+      Horario de apertura por sucursal y tipo de día, [open_hour, close_hour).
+      day_type = holiday solo fija el cierre (18:00); la apertura es la del día de la semana.
+      Fuente de la matriz: declaración de la administración (la configuración del ERP está desactualizada).
+  - name: staffing_rules
+    description: >
+      Vendedores presentes por hora en la matriz. Turnos 8-18 y 9-19, almuerzo 12-13 y 13-14,
+      lunes y domingo un solo vendedor (rotan; quien trabaja el domingo descansa el lunes).
+      Vigente hasta 2026-11-07: desde el 2026-11-08 hay una cajera adicional.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [branch_id, day_type, hour, valid_from]
+  - name: holiday_overrides
+    description: Correcciones manuales a la API de feriados, cada una con su justificación.
+  - name: calendar_events
+    description: Eventos estacionales de Ecuador que mueven la demanda (para controlar estacionalidad).

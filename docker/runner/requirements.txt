@@ -1,0 +1,5 @@
+# Dependencias directas fijadas; snowflake-connector-python y cryptography
+# llegan como dependencias de dbt-snowflake.
+dbt-core==1.12.6
+dbt-snowflake==1.12.4
+requests==2.34.2

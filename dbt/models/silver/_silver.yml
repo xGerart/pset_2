@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: int_vouchers
+    description: >
+      Un comprobante por fila (deduplicado). Incluye anulados con is_completed = false;
+      las banderas documentan problemas de calidad sin borrar filas.
+    columns:
+      - name: voucher_id
+        tests: [unique, not_null]
+      - name: sale_date
+        tests: [not_null]
+      - name: effective_hour
+        description: Hora de la venta para el análisis (NULL si cae fuera del horario y de la gracia de cierre).
+  - name: int_voucher_items
+    columns:
+      - name: voucher_item_id
+        tests: [unique, not_null]
+      - name: voucher_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('int_vouchers')
+                field: voucher_id
+      - name: net_quantity
+        description: Unidades vendidas menos devueltas.
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+  - name: int_line_costs
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [voucher_id, product_id]
+  - name: int_products
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+  - name: int_branches
+    columns:
+      - name: branch_id
+        tests: [unique, not_null]
+  - name: int_staff
+    columns:
+      - name: staff_id
+        tests: [unique, not_null]
+  - name: int_holidays
+    columns:
+      - name: holiday_date
+        description: Un feriado por fecha (la API trae duplicados que se consolidan aquí).
+        tests: [unique, not_null]
+  - name: int_store_hours
+    description: Spine de horas abiertas por sucursal (matriz y sucursal de control).
+    columns:
+      - name: store_hour_id
+        tests: [unique, not_null]
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [branch_id, hour_date, hour_of_day]

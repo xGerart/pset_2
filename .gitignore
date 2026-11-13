@@ -1,0 +1,18 @@
+# Credenciales: nunca al repo
+.env
+secrets/*
+!secrets/.gitkeep
+
+# Datos extraídos y artefactos
+data/
+*.csv
+!dbt/seeds/*.csv
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+logs/
+__pycache__/
+.DS_Store
+.env.kestra
+.env.runtime
+dbt/.user.yml

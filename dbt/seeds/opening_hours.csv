@@ -1,0 +1,16 @@
+branch_id,day_type,open_hour,close_hour,valid_from,valid_to,source
+1,mon,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,tue,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,wed,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,thu,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,fri,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,sat,8,19,2026-08-01,9999-12-31,declarado por la administración
+1,sun,9,18,2026-08-01,9999-12-31,declarado por la administración
+1,holiday,,18,2026-08-01,9999-12-31,"feriado: apertura normal, cierre 18:00 (declarado)"
+2,mon,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,tue,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,wed,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,thu,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,fri,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,sat,9,19,2026-08-01,9999-12-31,observado en ventas; la configuración del ERP dice 8-18
+2,holiday,,18,2026-08-01,9999-12-31,supuesto: misma regla que la matriz

@@ -1,0 +1,25 @@
+-- Bronze: 1:1 con RAW. Solo renombrar, tipar y pasar a hora local. Sin filtros ni joins.
+select
+    try_to_number(id)                         as voucher_id,
+    try_to_number(branch_id)                  as branch_id,
+    status                                    as voucher_status,
+    try_to_timestamp_tz(created_at)           as created_at_utc,
+    {{ local_ts('created_at') }}              as created_at_local,
+    {{ local_ts('processed_at') }}            as processed_at_local,
+    {{ local_ts('cancelled_at') }}            as cancelled_at_local,
+    try_to_number(salesperson_id)             as salesperson_id,
+    try_to_number(processed_by_id)            as processed_by_id,
+    try_to_number(created_by_id)              as created_by_id,
+    customer_document_type,
+    {{ pg_bool('has_customer_id') }}          as has_customer_id,
+    try_to_decimal(subtotal, 12, 2)           as subtotal,
+    try_to_decimal(discount, 12, 2)           as discount,
+    try_to_decimal(total, 12, 2)              as total,
+    try_to_decimal(shipping_amount, 12, 2)    as shipping_amount,
+    {{ pg_bool('requires_comprobante') }}     as requires_comprobante,
+    {{ pg_bool('has_coupon') }}               as has_coupon,
+    _batch_start,
+    _batch_end,
+    _loaded_at,
+    _run_id
+from {{ source('erp', 'erp_vouchers') }}

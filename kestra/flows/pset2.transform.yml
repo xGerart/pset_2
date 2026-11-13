@@ -1,0 +1,83 @@
+id: transform
+namespace: pset2
+description: |
+  dbt (Bronze -> Silver -> Gold + tests) y luego Spark (Gold -> OBT). Se dispara solo cuando
+  la ingesta termina en SUCCESS. Si un test de dbt con severidad error falla, Spark no corre.
+
+concurrency:
+  limit: 1
+  behavior: QUEUE
+
+tasks:
+  - id: dbt_build
+    type: io.kestra.plugin.scripts.shell.Commands
+    containerImage: pset2-runner:1.0
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      pullPolicy: NEVER
+      volumes:
+        - "{{ envs.host_project_dir }}/dbt:/app/dbt"
+    env:
+      SNOWFLAKE_ACCOUNT: "{{ secret('SNOWFLAKE_ACCOUNT') }}"
+      SNOWFLAKE_USER: "{{ secret('SNOWFLAKE_USER') }}"
+      SNOWFLAKE_ROLE: "{{ secret('SNOWFLAKE_ROLE') }}"
+      SNOWFLAKE_WAREHOUSE: "{{ secret('SNOWFLAKE_WAREHOUSE') }}"
+      SNOWFLAKE_DATABASE: "{{ secret('SNOWFLAKE_DATABASE') }}"
+      SNOWFLAKE_PRIVATE_KEY: "{{ secret('SNOWFLAKE_PRIVATE_KEY') }}"
+      DBT_PROFILES_DIR: /app/dbt
+    commands:
+      - cd /app/dbt
+      - dbt deps
+      - dbt source freshness || true   # informa; la frescura no detiene el build
+      - >-
+        dbt build --vars '{"analysis_start_date": "{{ envs.analysis_start_date }}",
+        "analysis_end_date": "{{ envs.analysis_end_date }}"}'
+    timeout: PT30M
+    retry:
+      type: constant
+      interval: PT1M
+      maxAttempts: 2
+
+  - id: spark_obt
+    type: io.kestra.plugin.scripts.shell.Commands
+    containerImage: pset2-spark:3.5.7
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      pullPolicy: NEVER
+      networkMode: pset2_default
+      user: root
+      volumes:
+        - "{{ envs.host_project_dir }}/spark:/app/spark:ro"
+    env:
+      SNOWFLAKE_ACCOUNT: "{{ secret('SNOWFLAKE_ACCOUNT') }}"
+      SNOWFLAKE_USER: "{{ secret('SNOWFLAKE_USER') }}"
+      SNOWFLAKE_ROLE: "{{ secret('SNOWFLAKE_ROLE') }}"
+      SNOWFLAKE_WAREHOUSE: "{{ secret('SNOWFLAKE_WAREHOUSE') }}"
+      SNOWFLAKE_DATABASE: "{{ secret('SNOWFLAKE_DATABASE') }}"
+      SNOWFLAKE_PRIVATE_KEY: "{{ secret('SNOWFLAKE_PRIVATE_KEY') }}"
+      ANALYSIS_START_DATE: "{{ envs.analysis_start_date }}"
+      ANALYSIS_END_DATE: "{{ envs.analysis_end_date }}"
+    commands:
+      - >
+        /opt/spark/bin/spark-submit
+        --master spark://spark-master:7077
+        --conf spark.driver.host=$(hostname -i)
+        --conf spark.executor.memory=1g
+        /app/spark/build_obt.py
+    timeout: PT30M
+
+errors:
+  - id: alert_failure
+    type: io.kestra.plugin.core.log.Log
+    level: ERROR
+    message: "Transformación fallida (ejecución {{ execution.id }}): revisar dbt build / OBT_AUDIT."
+
+triggers:
+  - id: after_ingest
+    type: io.kestra.plugin.core.trigger.Flow
+    preconditions:
+      id: ingest_ok
+      flows:
+        - namespace: pset2
+          flowId: ingest_erp
+          states: [SUCCESS]
