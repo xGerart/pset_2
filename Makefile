@@ -37,15 +37,15 @@ deploy:
 
 ## Corrida diaria manual (ventana de reproceso de 7 días).
 ingest:
-	$(CURL) -X POST "$(KESTRA)/executions/pset2/ingest_erp" | python3 -m json.tool | grep '"id"' | head -1
+	@$(CURL) -X POST "$(KESTRA)/executions/pset2/ingest_erp" | python3 -m json.tool | grep '"id"' | head -1
 
 ## Backfill histórico completo en una sola ejecución.
 backfill:
-	$(CURL) -X POST "$(KESTRA)/executions/pset2/ingest_erp" \
+	@$(CURL) -X POST "$(KESTRA)/executions/pset2/ingest_erp" \
 	  -F start_date=$(ANALYSIS_START_DATE) -F end_date=$(ANALYSIS_END_DATE) | python3 -m json.tool | grep '"id"' | head -1
 
 transform:
-	$(CURL) -X POST "$(KESTRA)/executions/pset2/transform" | python3 -m json.tool | grep '"id"' | head -1
+	@$(CURL) -X POST "$(KESTRA)/executions/pset2/transform" | python3 -m json.tool | grep '"id"' | head -1
 
 ## dbt fuera de Kestra (desarrollo).
 dbt-build:
