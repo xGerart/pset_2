@@ -16,3 +16,4 @@ __pycache__/
 .env.kestra
 .env.runtime
 dbt/.user.yml
+dbt/docs_target/

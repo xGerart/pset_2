@@ -4,7 +4,7 @@ export
 
 KESTRA   := http://localhost:8080/api/v1/main
 CURL     := curl -sS --fail-with-body -u "$(KESTRA_USER):$(KESTRA_PASSWORD)"
-RUNNER   := docker run --rm --env-file .env.runtime -v $(PWD)/dbt:/app/dbt -v $(PWD)/ingest:/app/ingest -v $(PWD)/secrets:/app/secrets:ro pset2-runner:1.0
+RUNNER   := docker run --rm --env-file .env.runtime -v $(PWD)/dbt:/app/dbt -v $(PWD)/kestra/scripts:/app/scripts -v $(PWD)/secrets:/app/secrets:ro pset2-runner:1.0
 
 .PHONY: secrets build up down deploy ingest backfill transform dbt-build status logs
 
@@ -13,7 +13,7 @@ secrets:
 	@test -f "$(SNOWFLAKE_PRIVATE_KEY_FILE)" || (echo "Falta $(SNOWFLAKE_PRIVATE_KEY_FILE)"; exit 1)
 	@test -f "$(ERP_SSH_KEY_FILE)" || (echo "Falta $(ERP_SSH_KEY_FILE)"; exit 1)
 	@ssh-keyscan -t ed25519 $(ERP_SSH_HOST) 2>/dev/null > secrets/known_hosts
-	@python3 scripts/make_secrets.py
+	@python3 kestra/scripts/make_secrets.py
 	@echo "OK: .env.kestra y .env.runtime generados (no se versionan)."
 
 build:
@@ -52,4 +52,4 @@ dbt-build:
 	$(RUNNER) sh -c 'export SNOWFLAKE_PRIVATE_KEY="$$(cat /app/secrets/snowflake_rsa_key.p8)"; cd /app/dbt && dbt deps && dbt build'
 
 status:
-	@$(CURL) "$(KESTRA)/executions/search?namespace=pset2&size=10" | python3 scripts/print_executions.py
+	@$(CURL) "$(KESTRA)/executions/search?namespace=pset2&size=10" | python3 kestra/scripts/print_executions.py

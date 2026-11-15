@@ -38,13 +38,15 @@ flowchart LR
 | Carpeta | Contenido |
 |---|---|
 | `docker-compose.yml` | Kestra (+ Postgres de metadatos) y Spark (master + worker) |
-| `docker/` | Imágenes: `pset2-runner` (ssh + conector Snowflake + dbt) y `pset2-spark` (Spark 3.5.7 + spark-snowflake) |
 | `kestra/flows/` | `ingest_erp` (ingesta programada con retries y backfill) y `transform` (dbt → Spark) |
+| `kestra/scripts/` | `extract_load.py` (extracción, contrato de columnas, carga y conciliación) y utilidades de secretos |
+| `kestra/runner/` | Imagen `pset2-runner` que Kestra lanza para la ingesta y dbt (ssh + conector Snowflake + dbt-snowflake) |
 | `kestra/server/` | Extractor de solo lectura instalado en el servidor del ERP (forced command de SSH) |
-| `ingest/` | `extract_load.py`: extracción, contrato de columnas, carga y conciliación |
-| `dbt/` | Proyecto dbt: Bronze (`stg_*`), Silver (`int_*`), Gold (`dim_*`, `fct_*`), seeds y tests |
-| `spark/` | `build_obt.py`: OBT + validaciones de joins |
-| `docs/` | Setup de Snowflake, calidad de datos, modelo dimensional y documento técnico |
+| `dbt/` | Proyecto dbt: Bronze/staging (`stg_*`), Silver (`int_*`), Gold (`dim_*`, `fct_*`), seeds y tests |
+| `spark/` | `build_obt.py` (OBT + validaciones de joins) y la imagen `pset2-spark` (Spark 3.5.7 + spark-snowflake) |
+| `docs/` | Setup de Snowflake, diagramas, perfilado de calidad (`calidad/`), capturas y documento técnico |
+
+Además: `Makefile` (atajos), `.gitignore` y `secrets/` (vacía en el repo; las llaves solo existen en local).
 
 ## Requisitos
 
@@ -77,8 +79,10 @@ flowchart LR
    make backfill
    ```
    Al terminar en SUCCESS, el flujo `transform` se dispara solo y ejecuta `dbt build` y luego la OBT en Spark.
-5. **Operación diaria.** El trigger `daily_after_close` corre a las 02:00 (America/Guayaquil) y
-   recarga los últimos 7 días. Para forzar una corrida: `make ingest`. Para ver el estado: `make status`.
+5. **Operación diaria.** El trigger `daily_after_close` corre a las 20:30 (America/Guayaquil), después del
+   cierre de las 19:00, y recarga los últimos 7 días. Para forzar una corrida: `make ingest`. Para ver el estado: `make status`.
+   Para probar los reintentos, ejecuta `ingest_erp` con `simulate_transient_failure = true`:
+   el primer intento falla a propósito y el segundo debe cargar todo (estado final WARNING).
 
 ### Ejecutar cada pieza por separado
 

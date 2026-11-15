@@ -5,7 +5,7 @@ name: pset2
 
 x-spark-image: &spark-image
   image: pset2-spark:3.5.7
-  build: ./docker/spark
+  build: ./spark
 
 services:
   kestra-postgres:
@@ -90,7 +90,7 @@ services:
   # Solo construye la imagen que Kestra usa para extraer, cargar y correr dbt.
   runner:
     image: pset2-runner:1.0
-    build: ./docker/runner
+    build: ./kestra/runner
     profiles: ["build"]
 
 volumes:

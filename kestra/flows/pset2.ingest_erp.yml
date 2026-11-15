@@ -16,6 +16,10 @@ inputs:
     type: DATE
     required: false
     description: Fin del backfill (inclusive).
+  - id: simulate_transient_failure
+    type: BOOL
+    defaults: false
+    description: Prueba de resiliencia. Hace fallar solo el PRIMER intento para evidenciar el retry.
 
 variables:
   run_date: "{{ trigger.date ?? execution.startDate | date('yyyy-MM-dd', timeZone='America/Guayaquil') }}"
@@ -30,7 +34,7 @@ tasks:
       type: io.kestra.plugin.scripts.runner.docker.Docker
       pullPolicy: NEVER
       volumes:
-        - "{{ envs.host_project_dir }}/ingest:/app/ingest:ro"
+        - "{{ envs.host_project_dir }}/kestra/scripts:/app/scripts:ro"
     env:
       SNOWFLAKE_ACCOUNT: "{{ secret('SNOWFLAKE_ACCOUNT') }}"
       SNOWFLAKE_USER: "{{ secret('SNOWFLAKE_USER') }}"
@@ -44,7 +48,11 @@ tasks:
       ERP_SSH_KNOWN_HOSTS: "{{ secret('ERP_SSH_KNOWN_HOSTS') }}"
       RUN_ID: "{{ execution.id }}"
     commands:
-      - python /app/ingest/extract_load.py --run-date {{ render(vars.run_date) }} {{ render(vars.window_args) }}
+      - echo "Intento {{ taskrun.attemptsCount }}"
+      - >-
+        if [ "{{ inputs.simulate_transient_failure }}" = "true" ] && [ "{{ taskrun.attemptsCount }}" = "0" ];
+        then echo "Fallo transitorio SIMULADO en el primer intento" >&2; exit 1; fi
+      - python /app/scripts/extract_load.py --run-date {{ render(vars.run_date) }} {{ render(vars.window_args) }}
     timeout: PT30M
     retry:
       type: exponential
@@ -64,6 +72,9 @@ errors:
 triggers:
   - id: daily_after_close
     type: io.kestra.plugin.core.trigger.Schedule
-    description: 02:00 hora local, después del cierre de caja (la tienda cierra a las 19:00).
-    cron: "0 2 * * *"
+    description: |
+      20:30 hora local: la tienda cierra a las 19:00, así que el día ya está completo.
+      Antes corría a las 02:00, pero el equipo que hospeda Kestra se suspende de noche y las
+      corridas del 13 y 14-11 fallaron o se alargaron horas (sesiones y JWT vencidos tras la suspensión).
+    cron: "30 20 * * *"
     timezone: America/Guayaquil

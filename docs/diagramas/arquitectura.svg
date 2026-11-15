@@ -36,7 +36,7 @@
   <text x="360" y="72" class="zone">DOCKER COMPOSE (LOCAL)</text>
   <rect x="370" y="100" width="500" height="120" class="box"/>
   <text x="390" y="135" class="t">Kestra · orquestación</text>
-  <text x="390" y="160" class="s">ingest_erp: cron 02:00 America/Guayaquil, retries exponenciales,</text>
+  <text x="390" y="160" class="s">ingest_erp: cron 20:30 America/Guayaquil, retries exponenciales,</text>
   <text x="390" y="182" class="s">backfill por rango · transform: trigger al SUCCESS de la ingesta</text>
   <text x="390" y="204" class="s">metadatos en PostgreSQL · secretos SECRET_* (base64)</text>
   <rect x="370" y="290" width="500" height="150" class="box"/>

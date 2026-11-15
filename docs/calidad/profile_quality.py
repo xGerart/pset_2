@@ -1,14 +1,14 @@
-"""Perfilado de calidad sobre Snowflake (RAW y SILVER) -> docs/calidad_datos_metricas.md.
+"""Perfilado de calidad sobre Snowflake (RAW y SILVER) -> docs/calidad/metricas.md.
 
 Cada métrica es una consulta reproducible; el documento técnico cita estos números.
 Uso (desde la raíz del repo):
   docker run --rm --env-file .env.runtime -v $PWD:/app -w /app pset2-runner:1.0 \
-      python scripts/profile_quality.py
+      python docs/calidad/profile_quality.py
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "ingest")
+sys.path.insert(0, "kestra/scripts")
 from extract_load import connect  # noqa: E402
 
 WINDOW = "sale_date between '2026-08-20' and '2026-11-07'"
@@ -66,7 +66,7 @@ METRICS = [
 
 def main() -> None:
     lines = ["# Métricas de calidad de datos", "",
-             "Generado por `scripts/profile_quality.py` contra Snowflake (PSET2).", "",
+             "Generado por `docs/calidad/profile_quality.py` contra Snowflake (PSET2).", "",
              "| Dimensión | Métrica | Resultado |", "|---|---|---|"]
     with connect() as conn, conn.cursor() as cur:
         for dim, name, sql in METRICS:
@@ -75,7 +75,7 @@ def main() -> None:
             value = " / ".join("—" if v is None else str(v) for v in row)
             print(f"{dim:<12} {name[:70]:<70} {value}")
             lines.append(f"| {dim} | {name} | {value} |")
-    Path("docs/calidad_datos_metricas.md").write_text("\n".join(lines) + "\n")
+    Path("docs/calidad/metricas.md").write_text("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

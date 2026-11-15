@@ -101,6 +101,6 @@
 <text x="54" y="666" font-size="14" font-weight="400" fill="#18181b">staff_role</text>
 <text x="54" y="688" font-size="14" font-weight="400" fill="#18181b">first/last_sale_date</text>
 <text x="440" y="760" font-size="15" font-weight="700" fill="#18181b">Grano</text>
-<text x="440" y="784" font-size="14" fill="#3f3f46">FCT_SALES_LINES: una línea de comprobante completado (19.504 filas).</text>
+<text x="440" y="784" font-size="14" fill="#3f3f46">FCT_SALES_LINES: una línea de comprobante completado (20.138 filas al 15-11).</text>
 <text x="440" y="806" font-size="14" fill="#3f3f46">FCT_STORE_HOURS: sucursal × fecha × hora abierta (2.578 filas). Spine de la OBT.</text>
 <text x="440" y="828" font-size="14" fill="#3f3f46">DIM_DATE, DIM_HOUR y DIM_BRANCH son conformadas (las comparten ambos hechos). DD = dimensión degenerada.</text></svg>

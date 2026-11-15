@@ -34,9 +34,10 @@ tasks:
         "analysis_end_date": "{{ envs.analysis_end_date }}"}'
     timeout: PT30M
     retry:
-      type: constant
-      interval: PT1M
-      maxAttempts: 2
+      type: exponential
+      interval: PT30S
+      maxInterval: PT5M
+      maxAttempts: 3
 
   - id: spark_obt
     type: io.kestra.plugin.scripts.shell.Commands
@@ -65,6 +66,11 @@ tasks:
         --conf spark.executor.memory=1g
         /app/spark/build_obt.py
     timeout: PT30M
+    retry:            # fallos transitorios de sesión con Snowflake (p. ej. JWT rechazado tras suspender el equipo)
+      type: exponential
+      interval: PT30S
+      maxInterval: PT5M
+      maxAttempts: 3
 
 errors:
   - id: alert_failure
@@ -80,4 +86,4 @@ triggers:
       flows:
         - namespace: pset2
           flowId: ingest_erp
-          states: [SUCCESS]
+          states: [SUCCESS, WARNING]   # WARNING = terminó bien tras un retry
