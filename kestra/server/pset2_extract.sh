@@ -10,8 +10,15 @@
 # correo, teléfono, dirección) y de empleados (nombres).
 set -euo pipefail
 
-SCHEMA="tenant_xxxxxxxxxxxxx"
-PSQL=(docker exec -i pladsh-erp-postgres-1 psql -U pladsh_user -d pladsh_erp -v ON_ERROR_STOP=1 -q -At)
+# Los identificadores del servidor (esquema del tenant, contenedor, base y usuario) no se
+# versionan: viven en ~/pset2/extract.env, solo en el servidor. Ver extract.env.example.
+CONFIG="$(dirname "$0")/extract.env"
+[[ -r "$CONFIG" ]] || { echo "falta $CONFIG" >&2; exit 78; }
+# shellcheck source=/dev/null
+source "$CONFIG"
+: "${PG_SCHEMA:?}" "${PG_CONTAINER:?}" "${PG_USER:?}" "${PG_DATABASE:?}"
+SCHEMA="$PG_SCHEMA"
+PSQL=(docker exec -i "$PG_CONTAINER" psql -U "$PG_USER" -d "$PG_DATABASE" -v ON_ERROR_STOP=1 -q -At)
 
 read -r ENTITY START END EXTRA <<<"${SSH_ORIGINAL_COMMAND:-}"
 DATE_RE='^[0-9]{4}-[0-9]{2}-[0-9]{2}$'

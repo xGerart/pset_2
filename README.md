@@ -97,6 +97,7 @@ Además: `Makefile` (atajos), `.gitignore` y `secrets/` (vacía en el repo; las 
 
 ```bash
 scp kestra/server/pset2_extract.sh <usuario>@<host>:pset2/pset2_extract.sh
+scp kestra/server/extract.env.example <usuario>@<host>:pset2/extract.env   # y completar los valores reales
 # en ~/.ssh/authorized_keys del servidor, una línea:
 command="/home/<usuario>/pset2/pset2_extract.sh",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty <contenido de secrets/kestra_ssh_ed25519.pub>
 ```
